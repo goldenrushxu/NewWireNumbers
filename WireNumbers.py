@@ -7,8 +7,8 @@ with open("config_wirenumbers", 'r', encoding='utf8') as f:
 #more to do:
 #1. auto duplicate XB terminals with :WH connection points
 
-fpath = conf[0].lstrip('filename:').rstrip('\n')
-df = pd.read_excel(fpath)
+old_file= conf[0].lstrip('old_filename:').rstrip('\n')
+df = pd.read_excel(old_file)
 temp = pd.DataFrame() 
 
 ############# 1. duplicate data, get source and target swapped for the second part of data  VVVVVVVVVVV
@@ -16,7 +16,7 @@ temp[['Source','Source location','Target','Target location']] = df[['Target','Ta
 df2 = pd.concat([df,temp])
 df2.reset_index(inplace=True)
 with open("log", 'a', encoding='utf8') as f:
-    f.write(datetime.now().strftime("%D   %H:%M:%S") + "\tRead data source: " + fpath + "\n")
+    f.write(datetime.now().strftime("%D   %H:%M:%S") + "\tRead data source: " + old_file+ "\n")
     f.write(datetime.now().strftime("%D   %H:%M:%S") + "\tSwapped target and source, and append to the end." + "\n")
 
 ############# 2. pick double ":" in terminals, delete data after the second ":", together with the :    VVVVVVVVVVV
@@ -124,7 +124,7 @@ df3['index'] = df3.index
 df3['divider'] = (1 + (df3['index'].astype(int)- (df3['index'].astype(int)% pitch))/pitch)
 df3['divider'] = df3['divider'].astype(int)
 # print(df3)
-with open((fpath.rstrip('.xls') + ".txt"), 'w', encoding='utf8') as f:
+with open((old_file.rstrip('.xls') + ".txt"), 'w', encoding='utf8') as f:
     df3_string = df3[['Prefix', 'divider', 'Suffix', 'Source']].to_string(header = False, index = False).replace(" ","").replace("'=","=").replace("'+","+")#.lstrip("'")
     df3_string = df3_string.replace("<==","<==\t")          #table symble need to be added at the last stage, not earlier
     f.write(df3_string + "\n")         #write to the file
